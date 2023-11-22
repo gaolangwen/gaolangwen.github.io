@@ -1,71 +1,50 @@
----
-title: 换根DP
-date: '2023-11-22 21:57:23'
-updated: '2023-11-22 22:02:33'
-permalink: /post/change-the-root-dp-z29uype.html
-comments: true
-toc: true
----
-
-# 换根DP
-
-> 又称**二次扫描**。
-
-特征：
-
-1. 树中没有指定根节点。
-2. 采用不同的节点作为根，答案可能不一样。
-
-## 模板
-
-### P3478 [POI2008] STA-Station
-
-暴力解法：枚举根节点，求以该节点作为根时，所有节点的深度之和，时间复杂度O(n^2)
-优化：直接通过父节点的深度之和，得到子节点的深之和：子节点变为根节点之后，子节点及其子树深度+1，其他节点深度-1。
-解法：
-
-1. 先指定任意节点作根节点
-2. 搜索完成指定根的答案计算，得到指定根的解。
-3. 二次扫描，利用原来根的解推出每个节点作为根的解。
-
-#### 定义状态
-
-dp[i]表示以1为总根节点，i为根的子树所有节点的深度之和
-f[i]表示以i为总根节点，其他节点的深度之和。
-答案：1~n中f[i]的最大值
-
-#### 求状态转移方程
-
-dp[cur]+=dp[nxt]
-f[cur]=f[fa]-siz[cur]+(n-siz[cur])
-这个子树的深度全部-1，即减去这个子树的大小；其余节点深度+1（siz[i]为i的子树节点数量）
-
-#### 初始状态
-
-dp[cur]=dep[cur]（dep[i]为节点i的深度）
-f[root]=dp[root]
-
-#### 验证转移顺序
-
-dp是先递归后转移
-f是先转移再递归（f[nxt]=f[cur]-siz[nxt]+(n-siz[nxt])）
-
-#### 代码
-
-```cpp
-#include<bits/stdc++.h>
+<h1>换根DP</h1>
+<blockquote>
+<p>又称<strong>二次扫描</strong>。</p>
+</blockquote>
+<p>特征：</p>
+<ol>
+<li>树中没有指定根节点。</li>
+<li>采用不同的节点作为根，答案可能不一样。</li>
+</ol>
+<h2>模板</h2>
+<h3>P3478 [POI2008] STA-Station</h3>
+<p>暴力解法：枚举根节点，求以该节点作为根时，所有节点的深度之和，时间复杂度O(n^2)<br />
+优化：直接通过父节点的深度之和，得到子节点的深之和：子节点变为根节点之后，子节点及其子树深度+1，其他节点深度-1。<br />
+解法：</p>
+<ol>
+<li>先指定任意节点作根节点</li>
+<li>搜索完成指定根的答案计算，得到指定根的解。</li>
+<li>二次扫描，利用原来根的解推出每个节点作为根的解。</li>
+</ol>
+<h4>定义状态</h4>
+<p>dp[i]表示以1为总根节点，i为根的子树所有节点的深度之和<br />
+f[i]表示以i为总根节点，其他节点的深度之和。<br />
+答案：1~n中f[i]的最大值</p>
+<h4>求状态转移方程</h4>
+<p>dp[cur]+=dp[nxt]<br />
+f[cur]=f[fa]-siz[cur]+(n-siz[cur])<br />
+这个子树的深度全部-1，即减去这个子树的大小；其余节点深度+1（siz[i]为i的子树节点数量）</p>
+<h4>初始状态</h4>
+<p>dp[cur]=dep[cur]（dep[i]为节点i的深度）<br />
+f[root]=dp[root]</p>
+<h4>验证转移顺序</h4>
+<p>dp是先递归后转移<br />
+f是先转移再递归（f[nxt]=f[cur]-siz[nxt]+(n-siz[nxt])）</p>
+<h4>代码</h4>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
 using namespace std;
 #define int long long
 
 const int N=1e6+5;
 int n,dp[N],f[N],dep[N],siz[N];
-vector<int>nbr[N];
+vector&lt;int&gt;nbr[N];
 
 void dfs(int cur,int fa)
 {
 	dp[cur]=dep[cur]=dep[fa]+1;
 	siz[cur]=1;
-	for(int i=0;i<nbr[cur].size();i++)
+	for(int i=0;i&lt;nbr[cur].size();i++)
 	{
 		int nxt=nbr[cur][i];
 		if(nxt==fa)
@@ -79,7 +58,7 @@ void dfs(int cur,int fa)
 
 void second_dfs(int cur,int fa)
 {
-	for(int i=0;i<nbr[cur].size();i++)
+	for(int i=0;i&lt;nbr[cur].size();i++)
 	{
 		int nxt=nbr[cur][i];
 		if(nxt==fa)
@@ -92,11 +71,11 @@ void second_dfs(int cur,int fa)
 
 signed main()
 {
-	cin>>n;
-	for(int i=1;i<=n-1;i++)
+	cin&gt;&gt;n;
+	for(int i=1;i&lt;=n-1;i++)
 	{
 		int x,y;
-		cin>>x>>y;
+		cin&gt;&gt;x&gt;&gt;y;
 		nbr[x].push_back(y);
 		nbr[y].push_back(x);
 	}
@@ -104,33 +83,26 @@ signed main()
 	f[1]=dp[1];
 	second_dfs(1,0);
 	int maxi=-1e9,pos;
-	for(int i=1;i<=n;i++)
-		if(f[i]>maxi)
+	for(int i=1;i&lt;=n;i++)
+		if(f[i]&gt;maxi)
 		{
 			maxi=f[i];
 			pos=i;
 		}
-	cout<<pos;
+	cout&lt;&lt;pos;
 	return 0;
 }
-```
-
-时间复杂度O(n)
-
-#### CF1187E Tree Painting(双倍经验)
-
-只需将dep初值设为`0`即可
-
-### P2986 [USACO10MAR] Great Cow Gatrering G
-
-本题加了边权和边权，只要稍微改动即可。
-`dfs`与`second_dfs`代码：
-
-```cpp
-void dfs(int cur,int fa)
+</code></pre>
+<p>时间复杂度O(n)</p>
+<h4>CF1187E Tree Painting(双倍经验)</h4>
+<p>只需将dep初值设为<code>0</code>即可</p>
+<h3>P2986 [USACO10MAR] Great Cow Gatrering G</h3>
+<p>本题加了边权和边权，只要稍微改动即可。<br />
+<code>dfs</code>与<code>second_dfs</code>代码：</p>
+<pre><code class="language-cpp">void dfs(int cur,int fa)
 {
 	siz[cur]=val[cur];
-	for(int i=0;i<nbr[cur].size();i++)
+	for(int i=0;i&lt;nbr[cur].size();i++)
 	{
 		int nxt=nbr[cur][i].to,w=nbr[cur][i].w;
 		if(fa==nxt)
@@ -143,7 +115,7 @@ void dfs(int cur,int fa)
 }
 void second_dfs(int cur,int fa)
 {
-	for(int i=0;i<nbr[cur].size();i++)
+	for(int i=0;i&lt;nbr[cur].size();i++)
 	{
 		int nxt=nbr[cur][i].to,w=nbr[cur][i].w;
 		if(fa==nxt)
@@ -153,35 +125,23 @@ void second_dfs(int cur,int fa)
 	}
 	return ;
 }
-```
-
-### CF219D Choosing Capital for Treeland
-
-#### 定义状态
-
-dp[i]表示以1为总根节点，i为根的子树需要反转方向的次数
-f[i]表示以i为总根节点，需要反转方向的次数
-答案：f[i]的最小值
-
-#### 求状态转移方程
-
-dp[cur]+=dp[nxt]+w
-w==0 -> f[nxt]=f[cur]+1
-w==1 -> f[nxt]=f[cur]-1
-
-#### 初始状态
-
-f[1]=dp[1]
-
-#### 验证转移顺序
-
-dp是先递归后转移
-f是先转移再递归
-
-#### 代码
-
-```cpp
-#include<bits/stdc++.h>
+</code></pre>
+<h3>CF219D Choosing Capital for Treeland</h3>
+<h4>定义状态</h4>
+<p>dp[i]表示以1为总根节点，i为根的子树需要反转方向的次数<br />
+f[i]表示以i为总根节点，需要反转方向的次数<br />
+答案：f[i]的最小值</p>
+<h4>求状态转移方程</h4>
+<p>dp[cur]+=dp[nxt]+w<br />
+w==0 -&gt; f[nxt]=f[cur]+1<br />
+w==1 -&gt; f[nxt]=f[cur]-1</p>
+<h4>初始状态</h4>
+<p>f[1]=dp[1]</p>
+<h4>验证转移顺序</h4>
+<p>dp是先递归后转移<br />
+f是先转移再递归</p>
+<h4>代码</h4>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
 using namespace std;
 
 const int N=2e5+5;
@@ -191,11 +151,11 @@ struct Node
 	int w;
 };
 int n,dp[N],f[N];
-vector<Node>nbr[N];
+vector&lt;Node&gt;nbr[N];
 
 void dfs(int cur,int fa)
 {
-	for(int i=0;i<nbr[cur].size();i++)
+	for(int i=0;i&lt;nbr[cur].size();i++)
 	{
 		int nxt=nbr[cur][i].to,w=nbr[cur][i].w;
 		if(fa==nxt)
@@ -208,12 +168,12 @@ void dfs(int cur,int fa)
 
 void second_dfs(int cur,int fa)
 {
-	for(int i=0;i<nbr[cur].size();i++)
+	for(int i=0;i&lt;nbr[cur].size();i++)
 	{
 		int nxt=nbr[cur][i].to,w=nbr[cur][i].w;
-		if(nxt<span style="font-weight: bold;" class="mark">fa)
+		if(nxt&lt;span style=&quot;font-weight: bold;&quot; class=&quot;mark&quot;&gt;fa)
 			continue;
-		if(w</span>0)
+		if(w&lt;/span&gt;0)
 			f[nxt]=f[cur]+1;
 		else
 			f[nxt]=f[cur]-1;
@@ -224,11 +184,11 @@ void second_dfs(int cur,int fa)
 
 int main()
 {
-	cin>>n;
-	for(int i=1;i<=n-1;i++)
+	cin&gt;&gt;n;
+	for(int i=1;i&lt;=n-1;i++)
 	{
 		int x,y;
-		cin>>x>>y;
+		cin&gt;&gt;x&gt;&gt;y;
 		nbr[x].push_back((Node){y,0});
 		nbr[y].push_back((Node){x,1});
 	}
@@ -236,12 +196,12 @@ int main()
 	f[1]=dp[1];
 	second_dfs(1,0);
 	int mini=1e9;
-	for(int i=1;i<=n;i++)
+	for(int i=1;i&lt;=n;i++)
 		mini=min(mini,f[i]);
-	cout<<mini<<"\n";
-	for(int i=1;i<=n;i++)
+	cout&lt;&lt;mini&lt;&lt;&quot;\n&quot;;
+	for(int i=1;i&lt;=n;i++)
 		if(f[i]==mini)
-			cout<<i<<" ";
+			cout&lt;&lt;i&lt;&lt;&quot; &quot;;
 	return 0;
 }
-```
+</code></pre>
